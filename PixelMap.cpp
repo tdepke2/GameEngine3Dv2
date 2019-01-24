@@ -11,15 +11,15 @@ void PixelMap::init(const Vector2u& pixelSize, const Vector2u& regionSize) {
     _vertices.setPrimitiveType(Quads);
     _vertices.resize(_size.x * _size.y * 4);
     
-    for (unsigned int i = 0; i < _size.y; ++i) {
-        for (unsigned int j = 0; j < _size.x; ++j) {
-            Vertex* currentQuad = &_vertices[(i * _size.x + j) * 4];
-            currentQuad[0].position = Vector2f(static_cast<float>(j * pixelSize.x), static_cast<float>(i * pixelSize.y));
-            currentQuad[1].position = Vector2f((j + 1.0f) * pixelSize.x, static_cast<float>(i * pixelSize.y));
-            currentQuad[2].position = Vector2f((j + 1.0f) * pixelSize.x, (i + 1.0f) * pixelSize.y);
-            currentQuad[3].position = Vector2f(static_cast<float>(j * pixelSize.x), (i + 1.0f) * pixelSize.y);
+    for (unsigned int y = 0; y < _size.y; ++y) {
+        for (unsigned int x = 0; x < _size.x; ++x) {
+            Vertex* currentQuad = &_vertices[(y * _size.x + x) * 4];
+            currentQuad[0].position = Vector2f(static_cast<float>(x * pixelSize.x), static_cast<float>(y * pixelSize.y));
+            currentQuad[1].position = Vector2f((x + 1.0f) * pixelSize.x, static_cast<float>(y * pixelSize.y));
+            currentQuad[2].position = Vector2f((x + 1.0f) * pixelSize.x, (y + 1.0f) * pixelSize.y);
+            currentQuad[3].position = Vector2f(static_cast<float>(x * pixelSize.x), (y + 1.0f) * pixelSize.y);
             
-            if ((i + j) % 2 == 0) {
+            if ((x + y) % 2 == 0) {
                 currentQuad[0].color = Color(10, 10, 10);
                 currentQuad[1].color = Color(10, 10, 10);
                 currentQuad[2].color = Color(10, 10, 10);
@@ -52,11 +52,11 @@ const Vector2u& PixelMap::getSize() const {
 }
 
 void PixelMap::clear(Color c) {
-    for (unsigned int i = 0; i < _size.y; ++i) {
-        for (unsigned int j = 0; j < _size.x; ++j) {
-            Vertex* currentQuad = &_vertices[(i * _size.x + j) * 4];
+    for (unsigned int y = 0; y < _size.y; ++y) {
+        for (unsigned int x = 0; x < _size.x; ++x) {
+            Vertex* currentQuad = &_vertices[(y * _size.x + x) * 4];
             
-            if ((i + j) % 2 == 0) {
+            if ((x + y) % 2 == 0) {
                 currentQuad[0].color = Color(10, 10, 10);
                 currentQuad[1].color = Color(10, 10, 10);
                 currentQuad[2].color = Color(10, 10, 10);

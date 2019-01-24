@@ -23,7 +23,6 @@ class Game {
     
     static State state;
     static mt19937 mainRNG;
-    static Vector3f camPosition, camRotation;
 };
 
 #endif
