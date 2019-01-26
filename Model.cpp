@@ -27,6 +27,22 @@ Model::Model(const string& name, unsigned int pointsSize, Vector3f* points, unsi
     _bounds = nullptr;    // yeah we need that init function back
 }
 
+unsigned int Model::getPointsSize() const {
+    return _pointsSize;
+}
+
+unsigned int Model::getTrianglesSize() const {
+    return _trianglesSize;
+}
+
+const Vector3f* Model::getPoints() const {
+    return _points;
+}
+
+const Triangle* Model::getTriangles() const {
+    return _triangles;
+}
+
 ostream& operator<<(ostream& out, const Model& model) {
     out << model._name << ",{\npoints:," << model._pointsSize << "\n";
     for (unsigned int i = 0; i < model._pointsSize; ++i) {

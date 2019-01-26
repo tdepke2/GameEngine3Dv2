@@ -24,12 +24,11 @@ int Game::start() {
         mainRNG.seed(static_cast<unsigned long>(chrono::high_resolution_clock::now().time_since_epoch().count()));
         window.create(VideoMode(500, 500), "Game Engine 3D v2");
         
-        PixelMap pixelMap;
-        pixelMap.init(Vector2u(5, 5), window.getSize());
         GraphicsEngine graphicsEngine;
+        graphicsEngine.init(Vector2u(5, 5), window.getSize());
         Level level;
         level.load("levels/level0.csv");
-        level.save("levels/level0cpy.csv");
+        //level.save("levels/level0cpy.csv");
         Vector3f camPosition(0.0f, 0.0f, 5.0f), camRotation(0.0f, 0.0f, 0.0f);
         Vector2i mousePosition(0, 0);
         View view(FloatRect(Vector2f(0.0f, 0.0f), Vector2f(window.getSize())));
@@ -57,10 +56,10 @@ int Game::start() {
         
         while (state != State::exiting) {
             // Re-draw objects.
-            graphicsEngine.redraw(pixelMap, camPosition, camRotation);    // The graphics engine should probably contain the pixel map.
+            graphicsEngine.redraw(level, camPosition, camRotation);    // The graphics engine should probably contain the pixel map.
             window.clear ();
             window.setView(view);
-            window.draw(pixelMap);
+            window.draw(graphicsEngine.getPixelMap());
             window.display();
             
             while (mainClock.getElapsedTime().asSeconds() < 1.0f / FPS_CAP) {}    // Slow down simulation if the current FPS is greater than the FPS cap.
@@ -97,7 +96,7 @@ int Game::start() {
                     mousePosition.x = event.mouseMove.x;
                     mousePosition.y = event.mouseMove.y;
                 } else if (event.type == Event::Resized) {
-                    pixelMap.init(Vector2u(5, 5), window.getSize());
+                    graphicsEngine.init(Vector2u(5, 5), window.getSize());
                     view.reset(FloatRect(Vector2f(0.0f, 0.0f), Vector2f(window.getSize())));
                 } else if (event.type == Event::Closed) {
                     window.close();
@@ -108,25 +107,25 @@ int Game::start() {
             // Check for keypress.
             float deltaX = 0.0f, deltaZ = 0.0f;
             if (Keyboard::isKeyPressed (Keyboard::W)) {
-                deltaZ -= 10.0f * deltaTime;
+                deltaZ -= 5.0f * deltaTime;
             }
             if (Keyboard::isKeyPressed (Keyboard::S)) {
-                deltaZ += 10.0f * deltaTime;
+                deltaZ += 5.0f * deltaTime;
             }
             if (Keyboard::isKeyPressed (Keyboard::D)) {
-                deltaX += 10.0f * deltaTime;
+                deltaX += 5.0f * deltaTime;
             }
             if (Keyboard::isKeyPressed (Keyboard::A)) {
-                deltaX -= 10.0f * deltaTime;
+                deltaX -= 5.0f * deltaTime;
             }
             camPosition.x += deltaX * cos(camRotation.y) - deltaZ * sin(camRotation.y);
             camPosition.z += deltaX * sin(camRotation.y) + deltaZ * cos(camRotation.y);
             
             if (Keyboard::isKeyPressed (Keyboard::Space)) {
-                camPosition.y += 10.0f * deltaTime;
+                camPosition.y += 5.0f * deltaTime;
             }
             if (Keyboard::isKeyPressed (Keyboard::LShift)) {
-                camPosition.y -= 10.0f * deltaTime;
+                camPosition.y -= 5.0f * deltaTime;
             }
         }
     } catch(exception& ex) {    // Catch any exceptions here and handle them as a game crash.

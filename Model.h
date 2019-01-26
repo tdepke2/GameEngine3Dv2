@@ -19,6 +19,10 @@ class Model {
     Model();
     ~Model();
     Model(const string& name, unsigned int pointsSize, Vector3f* points, unsigned int trianglesSize, Triangle* triangles);
+    unsigned int getPointsSize() const;
+    unsigned int getTrianglesSize() const;
+    const Vector3f* getPoints() const;
+    const Triangle* getTriangles() const;
     
     private:
     string _name;

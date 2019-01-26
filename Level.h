@@ -10,6 +10,7 @@ using namespace std;
 
 class Level {
     public:
+    const forward_list<Model>& getModels() const;
     void save(const string& saveFilename);
     void load(const string& loadFilename);
     

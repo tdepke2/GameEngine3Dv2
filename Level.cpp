@@ -7,6 +7,10 @@
 using namespace std;
 using namespace sf;
 
+const forward_list<Model>& Level::getModels() const {
+    return _models;
+}
+
 void Level::save(const string& saveFilename) {
     ofstream saveFile(saveFilename, ios::trunc);
     if (!saveFile.is_open()) {
