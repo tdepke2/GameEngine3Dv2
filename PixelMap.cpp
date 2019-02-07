@@ -1,4 +1,5 @@
 #include "PixelMap.h"
+#include <cassert>
 
 using namespace std;
 using namespace sf;
@@ -34,17 +35,19 @@ void PixelMap::init(const Vector2u& pixelSize, const Vector2u& regionSize) {
     }
 }
 
-void PixelMap::setPixel(const Vector2f& point, Color c) {
-    int xInt = static_cast<int>(point.x + 0.5f), yInt = static_cast<int>(point.y + 0.5f);
-    if (xInt < 0 || static_cast<unsigned int>(xInt) >= _size.x || yInt < 0 || static_cast<unsigned int>(yInt) >= _size.y) {
-        return;
-    }
-    
-    Vertex* currentQuad = &_vertices[(yInt * _size.x + xInt) * 4];
+void PixelMap::setPixel(int x, int y, Color c) {
+    assert(x >= 0 && x < static_cast<int>(_size.x) && y >= 0 && y < static_cast<int>(_size.y));
+    Vertex* currentQuad = &_vertices[(y * _size.x + x) * 4];
     currentQuad[0].color = c;
     currentQuad[1].color = c;
     currentQuad[2].color = c;
     currentQuad[3].color = c;
+}
+
+void PixelMap::setPixelWithCheck(int x, int y, Color c) {
+    if (x >= 0 && x < static_cast<int>(_size.x) && y >= 0 && y < static_cast<int>(_size.y)) {
+        setPixel(x, y, c);
+    }
 }
 
 const Vector2u& PixelMap::getSize() const {

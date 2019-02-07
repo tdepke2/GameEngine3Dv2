@@ -1,6 +1,6 @@
 #include "Game.h"
 
-//using namespace std;
+using namespace std;
 
 int main() {
     return Game::start();
