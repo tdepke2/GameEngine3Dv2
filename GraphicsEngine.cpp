@@ -38,59 +38,56 @@ void GraphicsEngine::redraw(Level& level, const Vector3f& camPosition, const Vec
             // apply back-face culling.
             
             if (ptrScreenA->tooFar && !ptrScreenB->tooFar || ptrScreenB->tooNear && !ptrScreenA->tooNear) {    // Sort the points near to far.
+                swap(ptrPointA, ptrPointB);
                 swap(ptrScreenA, ptrScreenB);
             }
             if (ptrScreenB->tooFar && !ptrScreenC->tooFar || ptrScreenC->tooNear && !ptrScreenB->tooNear) {
+                swap(ptrPointB, ptrPointC);
                 swap(ptrScreenB, ptrScreenC);
             }
             if (ptrScreenA->tooFar && !ptrScreenB->tooFar || ptrScreenB->tooNear && !ptrScreenA->tooNear) {
+                swap(ptrPointA, ptrPointB);
                 swap(ptrScreenA, ptrScreenB);
             }
             
             if (ptrScreenB->tooNear) {    // Check if two points are too near.
+                ScreenPoint screenD = graphicsTransform(_pixelMap.getSize(), camRotation, *ptrPointA - camPosition, *ptrPointC - camPosition, -NEAR_PLANE);
+                ScreenPoint screenE = graphicsTransform(_pixelMap.getSize(), camRotation, *ptrPointB - camPosition, *ptrPointC - camPosition, -NEAR_PLANE);
                 if (ptrScreenC->tooFar) {
-                    ScreenPoint screenD = graphicsTransform(_pixelMap.getSize(), camRotation, _findZIntersect(*ptrPointA, *ptrPointC, -NEAR_PLANE) - camPosition);
-                    ScreenPoint screenE = graphicsTransform(_pixelMap.getSize(), camRotation, _findZIntersect(*ptrPointB, *ptrPointC, -NEAR_PLANE) - camPosition);
-                    ScreenPoint screenF = graphicsTransform(_pixelMap.getSize(), camRotation, _findZIntersect(*ptrPointA, *ptrPointC, -FAR_PLANE) - camPosition);
-                    ScreenPoint screenG = graphicsTransform(_pixelMap.getSize(), camRotation, _findZIntersect(*ptrPointB, *ptrPointC, -FAR_PLANE) - camPosition);
+                    ScreenPoint screenF = graphicsTransform(_pixelMap.getSize(), camRotation, *ptrPointA - camPosition, *ptrPointC - camPosition, -FAR_PLANE);
+                    ScreenPoint screenG = graphicsTransform(_pixelMap.getSize(), camRotation, *ptrPointB - camPosition, *ptrPointC - camPosition, -FAR_PLANE);
                     fillTriangle(screenD, screenE, screenF);
                     fillTriangle(screenE, screenF, screenG);
                 } else {
-                    ScreenPoint screenD = graphicsTransform(_pixelMap.getSize(), camRotation, _findZIntersect(*ptrPointA, *ptrPointC, -NEAR_PLANE) - camPosition);
-                    ScreenPoint screenE = graphicsTransform(_pixelMap.getSize(), camRotation, _findZIntersect(*ptrPointB, *ptrPointC, -NEAR_PLANE) - camPosition);
                     fillTriangle(screenD, screenE, *ptrScreenC);
                 }
             } else if (ptrScreenB->tooFar) {    // Check if two points are too far.
+                ScreenPoint screenF = graphicsTransform(_pixelMap.getSize(), camRotation, *ptrPointA - camPosition, *ptrPointB - camPosition, -FAR_PLANE);
+                ScreenPoint screenG = graphicsTransform(_pixelMap.getSize(), camRotation, *ptrPointA - camPosition, *ptrPointC - camPosition, -FAR_PLANE);
                 if (ptrScreenA->tooNear) {
-                    ScreenPoint screenD = graphicsTransform(_pixelMap.getSize(), camRotation, _findZIntersect(*ptrPointA, *ptrPointB, -NEAR_PLANE) - camPosition);
-                    ScreenPoint screenE = graphicsTransform(_pixelMap.getSize(), camRotation, _findZIntersect(*ptrPointA, *ptrPointC, -NEAR_PLANE) - camPosition);
-                    ScreenPoint screenF = graphicsTransform(_pixelMap.getSize(), camRotation, _findZIntersect(*ptrPointA, *ptrPointB, -FAR_PLANE) - camPosition);
-                    ScreenPoint screenG = graphicsTransform(_pixelMap.getSize(), camRotation, _findZIntersect(*ptrPointA, *ptrPointC, -FAR_PLANE) - camPosition);
+                    ScreenPoint screenD = graphicsTransform(_pixelMap.getSize(), camRotation, *ptrPointA - camPosition, *ptrPointB - camPosition, -NEAR_PLANE);
+                    ScreenPoint screenE = graphicsTransform(_pixelMap.getSize(), camRotation, *ptrPointA - camPosition, *ptrPointC - camPosition, -NEAR_PLANE);
                     fillTriangle(screenD, screenE, screenF);
                     fillTriangle(screenE, screenF, screenG);
                 } else {
-                    ScreenPoint screenD = graphicsTransform(_pixelMap.getSize(), camRotation, _findZIntersect(*ptrPointA, *ptrPointB, -NEAR_PLANE) - camPosition);
-                    ScreenPoint screenE = graphicsTransform(_pixelMap.getSize(), camRotation, _findZIntersect(*ptrPointA, *ptrPointC, -NEAR_PLANE) - camPosition);
-                    fillTriangle(*ptrScreenA, screenD, screenE);
+                    fillTriangle(*ptrScreenA, screenF, screenG);
                 }
             } else if (ptrScreenA->tooNear) {    // Check if one point too near.
+                ScreenPoint screenD = graphicsTransform(_pixelMap.getSize(), camRotation, *ptrPointA - camPosition, *ptrPointB - camPosition, -NEAR_PLANE);
+                ScreenPoint screenE = graphicsTransform(_pixelMap.getSize(), camRotation, *ptrPointA - camPosition, *ptrPointC - camPosition, -NEAR_PLANE);
                 if (ptrScreenC->tooFar) {
-                    ScreenPoint screenD = graphicsTransform(_pixelMap.getSize(), camRotation, _findZIntersect(*ptrPointA, *ptrPointB, -NEAR_PLANE) - camPosition);
-                    ScreenPoint screenE = graphicsTransform(_pixelMap.getSize(), camRotation, _findZIntersect(*ptrPointA, *ptrPointC, -NEAR_PLANE) - camPosition);
-                    ScreenPoint screenF = graphicsTransform(_pixelMap.getSize(), camRotation, _findZIntersect(*ptrPointB, *ptrPointC, -FAR_PLANE) - camPosition);
-                    ScreenPoint screenG = graphicsTransform(_pixelMap.getSize(), camRotation, _findZIntersect(*ptrPointA, *ptrPointC, -FAR_PLANE) - camPosition);
+                    ScreenPoint screenF = graphicsTransform(_pixelMap.getSize(), camRotation, *ptrPointB - camPosition, *ptrPointC - camPosition, -FAR_PLANE);
+                    ScreenPoint screenG = graphicsTransform(_pixelMap.getSize(), camRotation, *ptrPointA - camPosition, *ptrPointC - camPosition, -FAR_PLANE);
                     fillTriangle(screenD, screenE, *ptrScreenB);
                     fillTriangle(screenE, *ptrScreenB, screenF);
                     fillTriangle(screenE, screenF, screenG);
                 } else {
-                    ScreenPoint screenD = graphicsTransform(_pixelMap.getSize(), camRotation, _findZIntersect(*ptrPointA, *ptrPointB, -NEAR_PLANE) - camPosition);
-                    ScreenPoint screenE = graphicsTransform(_pixelMap.getSize(), camRotation, _findZIntersect(*ptrPointA, *ptrPointC, -NEAR_PLANE) - camPosition);
                     fillTriangle(screenD, screenE, *ptrScreenB);
                     fillTriangle(screenE, *ptrScreenB, *ptrScreenC);
                 }
             } else if (ptrScreenC->tooFar) {    // Check if one point too far.
-                ScreenPoint screenD = graphicsTransform(_pixelMap.getSize(), camRotation, _findZIntersect(*ptrPointA, *ptrPointC, -NEAR_PLANE) - camPosition);
-                ScreenPoint screenE = graphicsTransform(_pixelMap.getSize(), camRotation, _findZIntersect(*ptrPointB, *ptrPointC, -NEAR_PLANE) - camPosition);
+                ScreenPoint screenD = graphicsTransform(_pixelMap.getSize(), camRotation, *ptrPointA - camPosition, *ptrPointC - camPosition, -FAR_PLANE);
+                ScreenPoint screenE = graphicsTransform(_pixelMap.getSize(), camRotation, *ptrPointB - camPosition, *ptrPointC - camPosition, -FAR_PLANE);
                 fillTriangle(*ptrScreenA, *ptrScreenB, screenD);
                 fillTriangle(*ptrScreenB, screenD, screenE);
             } else {    // Else, all points are between the viewing planes.
@@ -101,42 +98,14 @@ void GraphicsEngine::redraw(Level& level, const Vector3f& camPosition, const Vec
 }
 
 ScreenPoint GraphicsEngine::graphicsTransform(const Vector2u& screenSize, const Vector3f& camRotation, const Vector3f& point) {
-    float x0 = point.x, y0 = point.y, z0 = point.z;
-    float x1 = x0 * cos(camRotation.y) + z0 * sin(camRotation.y);
-    float z1 = -x0 * sin(camRotation.y) + z0 * cos(camRotation.y);
-    
-    z0 = z1 * cos(camRotation.x) + y0 * sin(camRotation.x);
-    /*if (z0 >= 0.0f) {
-        return Vector2f(-5.0f, -5.0f);
-    }*/
-    float y1 = -z1 * sin(camRotation.x) + y0 * cos(camRotation.x);
-    
-    y0 = y1 * cos(camRotation.z) + x1 * sin(camRotation.z);
-    x0 = -y1 * sin(camRotation.z) + x1 * cos(camRotation.z);
-    
-    float aspectRatio = static_cast<float>(screenSize.x) / screenSize.y;
-    if (aspectRatio < 1.0f) {
-        x0 /= aspectRatio;
-    } else {
-        y0 *= aspectRatio;
-    }
-    
-    bool tooNear = -z0 < NEAR_PLANE, tooFar = -z0 > FAR_PLANE;
-    unsigned int zAdjusted;
-    double zAdjustedDouble = static_cast<double>(-z0 - NEAR_PLANE) / (FAR_PLANE - NEAR_PLANE) * numeric_limits<unsigned int>::max() + 0.5;
-    if (zAdjustedDouble < 0.0) {
-        zAdjusted = 0;
-    } else if (zAdjustedDouble > static_cast<double>(numeric_limits<unsigned int>::max())) {
-        zAdjusted = numeric_limits<unsigned int>::max();
-    } else {
-        zAdjusted = static_cast<unsigned int>(zAdjustedDouble);
-    }
-    
-    z0 *= tan(90.0f * PI / 360.0f);
-    x1 = (x0 / -z0 + 1.0f) * screenSize.x / 2.0f;
-    y1 = (y0 / z0 + 1.0f) * screenSize.y / 2.0f;
-    
-    return ScreenPoint(static_cast<int>(x1 + 0.5f), static_cast<int>(y1 + 0.5f), zAdjusted, tooNear, tooFar);
+    return _scalingTransform(screenSize, _rotationTransform(camRotation, point));
+}
+
+ScreenPoint GraphicsEngine::graphicsTransform(const Vector2u& screenSize, const Vector3f& camRotation, Vector3f pointA, Vector3f pointB, float zTarget) {
+    pointA = _rotationTransform(camRotation, pointA);
+    pointB = _rotationTransform(camRotation, pointB);
+    float u = (zTarget - pointA.z) / (pointB.z - pointA.z);
+    return _scalingTransform(screenSize, Vector3f(pointA.x + u * (pointB.x - pointA.x), pointA.y + u * (pointB.y - pointA.y), zTarget));
 }
 
 void GraphicsEngine::fillTriangle(const ScreenPoint& pointA, const ScreenPoint& pointB, const ScreenPoint& pointC) {
@@ -161,6 +130,46 @@ void GraphicsEngine::fillTriangle(const ScreenPoint& pointA, const ScreenPoint& 
         _fillTriangleFlatBottom(a, b, d);
         _fillTriangleFlatTop(b, d, c);
     }
+}
+
+Vector3f GraphicsEngine::_rotationTransform(const Vector3f& camRotation, Vector3f point) {
+    Vector3f point2;
+    point2.x = point.x * cos(camRotation.y) + point.z * sin(camRotation.y);
+    point2.z = -point.x * sin(camRotation.y) + point.z * cos(camRotation.y);
+    
+    point.z = point2.z * cos(camRotation.x) + point.y * sin(camRotation.x);
+    point2.y = -point2.z * sin(camRotation.x) + point.y * cos(camRotation.x);
+    
+    point.y = point2.y * cos(camRotation.z) + point2.x * sin(camRotation.z);
+    point.x = -point2.y * sin(camRotation.z) + point2.x * cos(camRotation.z);
+    
+    return point;
+}
+
+ScreenPoint GraphicsEngine::_scalingTransform(const Vector2u& screenSize, Vector3f point) {
+    float aspectRatio = static_cast<float>(screenSize.x) / screenSize.y;
+    if (aspectRatio < 1.0f) {
+        point.x /= aspectRatio;
+    } else {
+        point.y *= aspectRatio;
+    }
+    
+    bool tooNear = -point.z < NEAR_PLANE, tooFar = -point.z > FAR_PLANE;
+    unsigned int zAdjusted;
+    double zAdjustedDouble = static_cast<double>(-point.z - NEAR_PLANE) / (FAR_PLANE - NEAR_PLANE) * numeric_limits<unsigned int>::max() + 0.5;
+    if (zAdjustedDouble < 0.0) {
+        zAdjusted = 0;
+    } else if (zAdjustedDouble > static_cast<double>(numeric_limits<unsigned int>::max())) {
+        zAdjusted = numeric_limits<unsigned int>::max();
+    } else {
+        zAdjusted = static_cast<unsigned int>(zAdjustedDouble);
+    }
+    
+    point.z *= tan(90.0f * PI / 360.0f);
+    point.x = (point.x / -point.z + 1.0f) * screenSize.x / 2.0f;
+    point.y = (point.y / point.z + 1.0f) * screenSize.y / 2.0f;
+    
+    return ScreenPoint(static_cast<int>(point.x + 0.5f), static_cast<int>(point.y + 0.5f), zAdjusted, tooNear, tooFar);
 }
 
 void GraphicsEngine::_horizontalLine(int x0, int x1, int y) {
@@ -211,9 +220,4 @@ void GraphicsEngine::_fillTriangleFlatTop(const Vector2i& a, const Vector2i& b, 
         x1 -= invSlopeBC;
         --y;
     }
-}
-
-Vector3f GraphicsEngine::_findZIntersect(const Vector3f& a, const Vector3f& b, float z) {
-    float u = (z - a.z) / (b.z - a.z);
-    return Vector3f(a.x + u * (b.x - a.x), a.y + u * (b.y - a.y), z);
 }

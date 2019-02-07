@@ -127,6 +127,12 @@ int Game::start() {
             if (Keyboard::isKeyPressed (Keyboard::LShift)) {
                 camPosition.y -= 5.0f * deltaTime;
             }
+            if (Keyboard::isKeyPressed (Keyboard::Q)) {
+                camRotation.z -= 1.0f * deltaTime;
+            }
+            if (Keyboard::isKeyPressed (Keyboard::E)) {
+                camRotation.z += 1.0f * deltaTime;
+            }
         }
     } catch(exception& ex) {    // Catch any exceptions here and handle them as a game crash.
         window.close();
