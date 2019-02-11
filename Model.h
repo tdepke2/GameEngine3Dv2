@@ -1,9 +1,11 @@
 #ifndef _MODEL_H
 #define _MODEL_H
 
+#include "TextureRect.h"
 #include <iostream>
 #include <SFML/Graphics.hpp>
 #include <string>
+#include <vector>
 
 using namespace std;
 using namespace sf;
@@ -11,11 +13,15 @@ using namespace sf;
 struct Triangle {
     unsigned int a, b, c;
     Vector3f normal;
-    // more needed
+    Color aColor, bColor, cColor;
+    Vector2f aTexture, bTexture, cTexture;
+    const TextureRect* texture;
 };
 
 class Model {
     public:
+    static vector<TextureRect> textures;
+    
     Model();
     ~Model();
     Model(const string& name, unsigned int pointsSize, Vector3f* points, unsigned int trianglesSize, Triangle* triangles);

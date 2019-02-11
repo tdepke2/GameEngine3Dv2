@@ -11,10 +11,10 @@ class PixelMap : public Drawable, public Transformable {
     public:
     virtual ~PixelMap();
     void init(const Vector2u& pixelSize, const Vector2u& regionSize);
-    void setPixel(int x, int y, Color c);
-    void setPixelWithCheck(int x, int y, Color c);
+    void setPixel(int x, int y, const Color& c);
+    void setPixelWithCheck(int x, int y, const Color& c);
     const Vector2u& getSize() const;
-    void clear(Color c = Color::Black);
+    void clear(const Color& c = Color::Black);
     
     private:
     VertexArray _vertices;

@@ -1,7 +1,6 @@
 #include "Game.h"
 #include "GraphicsEngine.h"
 #include "Level.h"
-#include "PixelMap.h"
 #include <cassert>
 #include <chrono>
 #include <cmath>
@@ -40,8 +39,8 @@ int Game::start() {
         triangle[1].position = Vector2f(100.0f, 10.0f);
         triangle[2].position = Vector2f(100.0f, 100.0f);
         triangle[0].color = Color::White;
-        triangle[1].color = Color::Blue;
-        triangle[2].color = Color::Green;
+        triangle[1].color = Color::Black;
+        triangle[2].color = Color(0, 0, 0, 0);
         triangle[0].texCoords = Vector2f(0.0f, 0.0f);
         triangle[1].texCoords = Vector2f(125.0f, 0.0f);
         triangle[2].texCoords = Vector2f(125.0f, 125.0f);
@@ -51,12 +50,11 @@ int Game::start() {
             system("pause");
             return -1;
         }
-        
         window.draw(triangle, &texture);*/
         
         while (state != State::exiting) {
             // Re-draw objects.
-            graphicsEngine.redraw(level, camPosition, camRotation);    // The graphics engine should probably contain the pixel map.
+            graphicsEngine.redraw(level, camPosition, camRotation);
             window.clear ();
             window.setView(view);
             window.draw(graphicsEngine.getPixelMap());

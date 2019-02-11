@@ -31,13 +31,13 @@ void GraphicsEngine::redraw(Level& level, const Vector3f& camPosition, const Vec
             const ScreenPoint* ptrScreenA = &_screenPoints[modelsIter->getTriangles()[i].a];
             const ScreenPoint* ptrScreenB = &_screenPoints[modelsIter->getTriangles()[i].b];
             const ScreenPoint* ptrScreenC = &_screenPoints[modelsIter->getTriangles()[i].c];
-            if (ptrScreenA->tooNear && ptrScreenB->tooNear && ptrScreenC->tooNear || ptrScreenA->tooFar && ptrScreenB->tooFar && ptrScreenC->tooFar) {
+            if (ptrScreenA->tooNear || ptrScreenB->tooNear || ptrScreenC->tooNear || ptrScreenA->tooFar || ptrScreenB->tooFar || ptrScreenC->tooFar) {    // #################################################
                 continue;
             }
             
             // apply back-face culling.
             
-            if (ptrScreenA->tooFar && !ptrScreenB->tooFar || ptrScreenB->tooNear && !ptrScreenA->tooNear) {    // Sort the points near to far.
+            /*if (ptrScreenA->tooFar && !ptrScreenB->tooFar || ptrScreenB->tooNear && !ptrScreenA->tooNear) {    // Sort the points near to far.
                 swap(ptrPointA, ptrPointB);
                 swap(ptrScreenA, ptrScreenB);
             }
@@ -56,10 +56,10 @@ void GraphicsEngine::redraw(Level& level, const Vector3f& camPosition, const Vec
                 if (ptrScreenC->tooFar) {
                     ScreenPoint screenF = graphicsTransform(_pixelMap.getSize(), camRotation, *ptrPointA - camPosition, *ptrPointC - camPosition, -FAR_PLANE);
                     ScreenPoint screenG = graphicsTransform(_pixelMap.getSize(), camRotation, *ptrPointB - camPosition, *ptrPointC - camPosition, -FAR_PLANE);
-                    fillTriangle(screenD, screenE, screenF);
-                    fillTriangle(screenE, screenF, screenG);
+                    fillTriangle(modelsIter->getTriangles()[i], screenD, screenE, screenF);
+                    fillTriangle(modelsIter->getTriangles()[i], screenE, screenF, screenG);
                 } else {
-                    fillTriangle(screenD, screenE, *ptrScreenC);
+                    fillTriangle(modelsIter->getTriangles()[i], screenD, screenE, *ptrScreenC);
                 }
             } else if (ptrScreenB->tooFar) {    // Check if two points are too far.
                 ScreenPoint screenF = graphicsTransform(_pixelMap.getSize(), camRotation, *ptrPointA - camPosition, *ptrPointB - camPosition, -FAR_PLANE);
@@ -67,10 +67,10 @@ void GraphicsEngine::redraw(Level& level, const Vector3f& camPosition, const Vec
                 if (ptrScreenA->tooNear) {
                     ScreenPoint screenD = graphicsTransform(_pixelMap.getSize(), camRotation, *ptrPointA - camPosition, *ptrPointB - camPosition, -NEAR_PLANE);
                     ScreenPoint screenE = graphicsTransform(_pixelMap.getSize(), camRotation, *ptrPointA - camPosition, *ptrPointC - camPosition, -NEAR_PLANE);
-                    fillTriangle(screenD, screenE, screenF);
-                    fillTriangle(screenE, screenF, screenG);
+                    fillTriangle(modelsIter->getTriangles()[i], screenD, screenE, screenF);
+                    fillTriangle(modelsIter->getTriangles()[i], screenE, screenF, screenG);
                 } else {
-                    fillTriangle(*ptrScreenA, screenF, screenG);
+                    fillTriangle(modelsIter->getTriangles()[i], *ptrScreenA, screenF, screenG);
                 }
             } else if (ptrScreenA->tooNear) {    // Check if one point too near.
                 ScreenPoint screenD = graphicsTransform(_pixelMap.getSize(), camRotation, *ptrPointA - camPosition, *ptrPointB - camPosition, -NEAR_PLANE);
@@ -78,21 +78,31 @@ void GraphicsEngine::redraw(Level& level, const Vector3f& camPosition, const Vec
                 if (ptrScreenC->tooFar) {
                     ScreenPoint screenF = graphicsTransform(_pixelMap.getSize(), camRotation, *ptrPointB - camPosition, *ptrPointC - camPosition, -FAR_PLANE);
                     ScreenPoint screenG = graphicsTransform(_pixelMap.getSize(), camRotation, *ptrPointA - camPosition, *ptrPointC - camPosition, -FAR_PLANE);
-                    fillTriangle(screenD, screenE, *ptrScreenB);
-                    fillTriangle(screenE, *ptrScreenB, screenF);
-                    fillTriangle(screenE, screenF, screenG);
+                    fillTriangle(modelsIter->getTriangles()[i], screenD, screenE, *ptrScreenB);
+                    fillTriangle(modelsIter->getTriangles()[i], screenE, *ptrScreenB, screenF);
+                    fillTriangle(modelsIter->getTriangles()[i], screenE, screenF, screenG);
                 } else {
-                    fillTriangle(screenD, screenE, *ptrScreenB);
-                    fillTriangle(screenE, *ptrScreenB, *ptrScreenC);
+                    fillTriangle(modelsIter->getTriangles()[i], screenD, screenE, *ptrScreenB);
+                    fillTriangle(modelsIter->getTriangles()[i], screenE, *ptrScreenB, *ptrScreenC);
                 }
             } else if (ptrScreenC->tooFar) {    // Check if one point too far.
                 ScreenPoint screenD = graphicsTransform(_pixelMap.getSize(), camRotation, *ptrPointA - camPosition, *ptrPointC - camPosition, -FAR_PLANE);
                 ScreenPoint screenE = graphicsTransform(_pixelMap.getSize(), camRotation, *ptrPointB - camPosition, *ptrPointC - camPosition, -FAR_PLANE);
-                fillTriangle(*ptrScreenA, *ptrScreenB, screenD);
-                fillTriangle(*ptrScreenB, screenD, screenE);
-            } else {    // Else, all points are between the viewing planes.
-                fillTriangle(*ptrScreenA, *ptrScreenB, *ptrScreenC);
-            }
+                fillTriangle(modelsIter->getTriangles()[i], *ptrScreenA, *ptrScreenB, screenD);
+                fillTriangle(modelsIter->getTriangles()[i], *ptrScreenB, screenD, screenE);
+            } else {    // Else, all points are between the viewing planes.*/
+                // Need to fix this before adding back plane culling #########################################################################################################################################
+                ShaderPoint a(ptrScreenA->x, ptrScreenA->y, ptrScreenA->z, modelsIter->getTriangles()[i].aColor, modelsIter->getTriangles()[i].aTexture.x, modelsIter->getTriangles()[i].aTexture.y);
+                ShaderPoint b(ptrScreenB->x, ptrScreenB->y, ptrScreenB->z, modelsIter->getTriangles()[i].bColor, modelsIter->getTriangles()[i].bTexture.x, modelsIter->getTriangles()[i].bTexture.y);
+                ShaderPoint c(ptrScreenC->x, ptrScreenC->y, ptrScreenC->z, modelsIter->getTriangles()[i].cColor, modelsIter->getTriangles()[i].cTexture.x, modelsIter->getTriangles()[i].cTexture.y);
+                fillTriangle(&a, &b, &c, modelsIter->getTriangles()[i].texture);
+            //}
+        }
+    }
+    
+    for (unsigned int y = 0; y < Model::textures.back().getSize().y / 2; ++y) {
+        for (unsigned int x = 0; x < Model::textures.back().getSize().x / 2; ++x) {
+            _pixelMap.setPixelWithCheck(x, y, Model::textures.back().getPixel(static_cast<float>(x * 2) / Model::textures.back().getSize().x, static_cast<float>(y * 2) / Model::textures.back().getSize().y));
         }
     }
 }
@@ -108,27 +118,31 @@ ScreenPoint GraphicsEngine::graphicsTransform(const Vector2u& screenSize, const 
     return _scalingTransform(screenSize, Vector3f(pointA.x + u * (pointB.x - pointA.x), pointA.y + u * (pointB.y - pointA.y), zTarget));
 }
 
-void GraphicsEngine::fillTriangle(const ScreenPoint& pointA, const ScreenPoint& pointB, const ScreenPoint& pointC) {
+void GraphicsEngine::fillTriangle(const ShaderPoint* a, const ShaderPoint* b, const ShaderPoint* c, const TextureRect* texture) {
     // Based on algorithm from http://www.sunshine2k.de/coding/java/TriangleRasterization/TriangleRasterization.html
-    Vector2i a(pointA.x, pointA.y), b(pointB.x, pointB.y), c(pointC.x, pointC.y);
-    if (b.y < a.y) {    // Sort points by y-coordinate ascending.
+    if (b->y < a->y) {    // Sort points by y-coordinate ascending.
         swap(a, b);
     }
-    if (c.y < b.y) {
+    if (c->y < b->y) {
         swap(b, c);
     }
-    if (b.y < a.y) {
+    if (b->y < a->y) {
         swap(a, b);
     }
     
-    if (b.y == c.y) {
-        _fillTriangleFlatBottom(a, b, c);
-    } else if (a.y == b.y) {
-        _fillTriangleFlatTop(a, b, c);
+    if (b->y == c->y) {
+        _fillTriangleFlatBottom(*a, *b, *c, texture);
+    } else if (a->y == b->y) {
+        _fillTriangleFlatTop(*a, *b, *c, texture);
     } else {
-        Vector2i d(static_cast<int>(a.x + static_cast<float>(a.x - c.x) / (a.y - c.y) * (b.y - a.y)), b.y);
-        _fillTriangleFlatBottom(a, b, d);
-        _fillTriangleFlatTop(b, d, c);
+        ShaderPoint d;    // Need more calculations in here ######################################################################
+        float newX = a->x + static_cast<float>(a->x - c->x) / (a->y - c->y) * (b->y - a->y);
+        d.x = static_cast<float>(newX);    // This may need rounding instead of direct cast.
+        d.y = b->y;
+        d.xTex = a->xTex + (c->xTex - a->xTex) * static_cast<float>(newX - a->x) / (c->x - a->x);
+        d.yTex = a->yTex + (c->yTex - a->yTex) * static_cast<float>(d.y - a->y) / (c->y - a->y);
+        _fillTriangleFlatBottom(*a, *b, d, texture);
+        _fillTriangleFlatTop(*b, d, *c, texture);
     }
 }
 
@@ -172,7 +186,7 @@ ScreenPoint GraphicsEngine::_scalingTransform(const Vector2u& screenSize, Vector
     return ScreenPoint(static_cast<int>(point.x + 0.5f), static_cast<int>(point.y + 0.5f), zAdjusted, tooNear, tooFar);
 }
 
-void GraphicsEngine::_horizontalLine(int x0, int x1, int y) {
+void GraphicsEngine::_horizontalLine(const ShaderPoint& a, const ShaderPoint& b, const ShaderPoint& c, const TextureRect* texture, int x0, int x1, int y) {
     if (x0 > x1) {
         swap(x0, x1);
     }
@@ -183,12 +197,13 @@ void GraphicsEngine::_horizontalLine(int x0, int x1, int y) {
         x1 = _pixelMap.getSize().x - 1;
     }
     while (x0 <= x1) {
-        _pixelMap.setPixel(x0, y, Color::White);
+        float s = static_cast<float>(x0 - c.x) / (b.x - c.x), t = static_cast<float>(y - a.y) / (b.y - a.y);
+        _pixelMap.setPixel(x0, y, texture->getPixel(a.xTex + (c.xTex + (b.xTex - c.xTex) * s - a.xTex) * t, a.yTex + (c.yTex + (b.yTex - c.yTex) * s - a.yTex) * t));
         ++x0;
     }
 }
 
-void GraphicsEngine::_fillTriangleFlatBottom(const Vector2i& a, const Vector2i& b, const Vector2i& c) {    // Point a needs to be at the top.
+void GraphicsEngine::_fillTriangleFlatBottom(const ShaderPoint& a, const ShaderPoint& b, const ShaderPoint& c, const TextureRect* texture) {    // Point a needs to be at the top.
     float invSlopeAC = static_cast<float>(a.x - c.x) / (a.y - c.y), invSlopeAB = static_cast<float>(a.x - b.x) / (a.y - b.y);
     float x0 = a.x + 0.5f, x1 = a.x + 0.5f;
     int y = a.y, yStop = (b.y < static_cast<int>(_pixelMap.getSize().y)) ? b.y : _pixelMap.getSize().y - 1;
@@ -198,14 +213,14 @@ void GraphicsEngine::_fillTriangleFlatBottom(const Vector2i& a, const Vector2i& 
         y = 0;
     }
     while (y <= yStop) {
-        _horizontalLine(static_cast<int>(x0), static_cast<int>(x1), y);
+        _horizontalLine(a, b, c, texture, static_cast<int>(x0), static_cast<int>(x1), y);
         x0 += invSlopeAC;
         x1 += invSlopeAB;
         ++y;
     }
 }
 
-void GraphicsEngine::_fillTriangleFlatTop(const Vector2i& a, const Vector2i& b, const Vector2i& c) {    // Point c needs to be at the bottom.
+void GraphicsEngine::_fillTriangleFlatTop(const ShaderPoint& a, const ShaderPoint& b, const ShaderPoint& c, const TextureRect* texture) {    // Point c needs to be at the bottom.
     float invSlopeAC = static_cast<float>(a.x - c.x) / (a.y - c.y), invSlopeBC = static_cast<float>(b.x - c.x) / (b.y - c.y);
     float x0 = c.x + 0.5f, x1 = c.x + 0.5f;
     int y = c.y, yStop = (a.y >= 0) ? a.y : 0;
@@ -215,7 +230,7 @@ void GraphicsEngine::_fillTriangleFlatTop(const Vector2i& a, const Vector2i& b, 
         y = _pixelMap.getSize().y - 1;
     }
     while (y > yStop) {
-        _horizontalLine(static_cast<int>(x0), static_cast<int>(x1), y);
+        _horizontalLine(a, b, c, texture, static_cast<int>(x0), static_cast<int>(x1), y);
         x0 -= invSlopeAC;
         x1 -= invSlopeBC;
         --y;

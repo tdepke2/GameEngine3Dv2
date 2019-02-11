@@ -3,6 +3,8 @@
 using namespace std;
 using namespace sf;
 
+vector<TextureRect> Model::textures;
+
 Model::Model() {
     _pointsSize = 0;
     _trianglesSize = 0;

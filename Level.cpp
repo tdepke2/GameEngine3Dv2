@@ -7,7 +7,7 @@
 using namespace std;
 using namespace sf;
 
-const forward_list<Model>& Level::getModels() const {
+const list<Model>& Level::getModels() const {
     return _models;
 }
 
@@ -39,7 +39,6 @@ void Level::load(const string& loadFilename) {
     unsigned int pointsSize, trianglesSize, index;
     Vector3f* points = nullptr;
     Triangle* triangles = nullptr;
-    auto modelsIter = _models.before_begin();
     try {
         while (getline(loadFile, line)) {
             ++lineNumber;
@@ -94,16 +93,32 @@ void Level::load(const string& loadFilename) {
                     index = 0;
                     triangles = new Triangle[trianglesSize];
                     ++nestedEntries;
-                } else if (nestedEntries == 4 && lineData.size() == 4) {    // Parse data for the triangles.
+                } else if (nestedEntries == 4 && lineData.size() == 23) {    // Parse data for the triangles.
                     if (index >= trianglesSize) {
                         throw runtime_error("Triangle count is incorrect, memory size exceeded.");
                     }
                     triangles[index].a = stoi(lineData[1]);
                     triangles[index].b = stoi(lineData[2]);
                     triangles[index].c = stoi(lineData[3]);
+                    triangles[index].aColor = Color(stoi(lineData[4]), stoi(lineData[5]), stoi(lineData[6]), stoi(lineData[7]));
+                    triangles[index].bColor = Color(stoi(lineData[8]), stoi(lineData[9]), stoi(lineData[10]), stoi(lineData[11]));
+                    triangles[index].cColor = Color(stoi(lineData[12]), stoi(lineData[13]), stoi(lineData[14]), stoi(lineData[15]));
+                    triangles[index].aTexture = Vector2f(stof(lineData[16]), stof(lineData[17]));
+                    triangles[index].bTexture = Vector2f(stof(lineData[18]), stof(lineData[19]));
+                    triangles[index].cTexture = Vector2f(stof(lineData[20]), stof(lineData[21]));
+                    triangles[index].texture = nullptr;
+                    for (const TextureRect& t : Model::textures) {
+                        if (t.getFilename() == lineData[22]) {
+                            triangles[index].texture = &t;
+                        }
+                    }
+                    if (triangles[index].texture == nullptr) {
+                        Model::textures.emplace_back("textures/" + lineData[22]);
+                        triangles[index].texture = &Model::textures.back();
+                    }
                     ++index;
                 } else if (nestedEntries == 5 && lineData.size() == 1 && lineData[0] == "}") {
-                    modelsIter = _models.emplace_after(modelsIter, modelName, pointsSize, points, trianglesSize, triangles);
+                    _models.emplace_back(modelName, pointsSize, points, trianglesSize, triangles);
                     nestedEntries = 0;
                 } else {
                     throw runtime_error("Invalid data for model.");
@@ -113,8 +128,6 @@ void Level::load(const string& loadFilename) {
             }
         }
     } catch (exception& ex) {
-        delete[] points;
-        delete[] triangles;
         throw runtime_error(loadFilename + " at line " + to_string(lineNumber) + ": " + ex.what());
     }
     
